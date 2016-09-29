@@ -22,8 +22,7 @@ module Rhino
         end
 
         options.on "-v", "--version", 'version' do
-          version
-          exit
+          return version
         end
 
         options.string "-b", "--bind", 'bind (default: 0.0.0.0)', default: "0.0.0.0"

@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    rhino (0.0.1)
+    rhino (0.0.2)
       rack
       slop
 
@@ -49,8 +49,8 @@ PLATFORMS
 DEPENDENCIES
   bundler
   coveralls
-  rhino!
   rake
+  rhino!
   rspec
 
 BUNDLED WITH
