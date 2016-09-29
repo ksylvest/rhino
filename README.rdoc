@@ -1,0 +1,32 @@
+= Rhino
+
+Rhino is a simple Ruby server that can run rack apps. It is written as a fun experiment.
+
+== Installation
+
+    gem install rhino
+
+== Usage
+
+    rhino
+
+== Advanced
+
+    rhino [options] [./config.ru]
+        -h, --help     help
+        -v, --version  version
+        -b, --bind     bind (default: 0.0.0.0)
+        -p, --port     port (default: 5000)
+        --backlog      backlog (default: 64)
+        --reuseaddr    reuseaddr (default: true)
+
+== Status
+
+{<img src="https://img.shields.io/travis/ksylvest/rhino.svg" />}[https://travis-ci.org/ksylvest/rhino]
+{<img src="https://img.shields.io/gemnasium/ksylvest/rhino.svg" />}[https://gemnasium.com/ksylvest/rhino]
+{<img src="https://img.shields.io/coveralls/ksylvest/rhino.svg" />}[https://coveralls.io/r/ksylvest/rhino]
+{<img src="https://img.shields.io/codeclimate/github/ksylvest/rhino.svg" />}[https://codeclimate.com/github/ksylvest/rhino]
+
+== Copyright
+
+Copyright (c) 2015 - 2016 Kevin Sylvestre. See LICENSE for details.
