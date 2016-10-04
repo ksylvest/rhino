@@ -22,16 +22,19 @@ module Rhino
     end
 
     def monitor
-      selections, _, _ = IO.select(self.sockets)
-      io, _ = selections
+      selections, = IO.select(self.sockets)
+      io, = selections
 
       begin
-        socket, _ = io.accept
-        http = Rhino::HTTP::new(socket)
-        http.handle(application)
+        socket, = io.accept
+        http = Rhino::HTTP::new(socket, application)
+        http.handle
       rescue Rhino::HTTP::Exception => exception
         Rhino.logger.log("EXCEPTION: #{exception.message}")
-      rescue ::Errno::ECONNRESET , ::Errno::ENOTCONN , ::Errno::EPIPE , ::Errno::EPROTOTYPE
+      rescue ::Errno::ECONNRESET
+      rescue ::Errno::ENOTCONN
+      rescue ::Errno::EPIPE
+      rescue ::Errno::EPROTOTYPE
       ensure
         socket.close
       end

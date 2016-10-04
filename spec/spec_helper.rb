@@ -1,7 +1,7 @@
-require 'coveralls'
+require "coveralls"
 Coveralls.wear!
 
-require 'bundler/setup'
+require "bundler/setup"
 Bundler.setup
 
-require 'rhino'
+require "rhino"

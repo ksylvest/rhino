@@ -1,4 +1,12 @@
 module Rhino
+
+  # Handles the bootstrapping of the application (setting up sockets, building via rack, etc).
+  #
+  # Usage:
+  #
+  #   launcher = Rhino.Launcher.new(5000, '0.0.0.0', reuseaddr, 64, './config.ru')
+  #   launcher.run
+  #
   class Launcher
     attr_accessor :port
     attr_accessor :bind
@@ -44,4 +52,5 @@ module Rhino
     end
 
   end
+
 end

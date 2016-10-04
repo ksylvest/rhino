@@ -3,6 +3,14 @@ require "rack"
 require "time"
 
 module Rhino
+
+  # An interface for HTTP. Responsible for reading and writting to the socket via the HTTP protocol.
+  #
+  # Usage:
+  #
+  #   http = Rhino::HTTP.new(socket, application)
+  #   http.handle
+  #
   class HTTP
     RESERVED = /\A(Date|Connection)\Z/i.freeze
     VERSION = "HTTP/1.1".freeze
@@ -12,9 +20,11 @@ module Rhino
     end
 
     attr_accessor :socket
+    attr_accessor :application
 
-    def initialize(socket)
+    def initialize(socket, application)
       self.socket = socket
+      self.application = application
     end
 
     def parse
@@ -67,7 +77,7 @@ module Rhino
         break if hl.eql?(CRLF)
 
         matches = /\A(?<key>[^:]+):\s*(?<value>.+)#{CRLF}\Z/.match(hl)
-        raise Exception.new("invalid header line: #{hl.inspect}") if !matches
+        raise Exception.new("invalid header line: #{hl.inspect}") unless matches
         key = matches[:key].strip
         value = matches[:value].strip
       end
@@ -79,14 +89,16 @@ module Rhino
       return env
     end
 
-    def handle(application)
+    def handle
       env = parse
+
       begin
         status, headers, body = application.call(env)
       rescue ::Exception => exception
         Rhino.logger.log(exception.inspect)
         status, headers, body = 500, {}, []
       end
+
       time = Time.now.httpdate
 
       socket.write "#{VERSION} #{status} #{Rack::Utils::HTTP_STATUS_CODES.fetch(status) { 'UNKNOWN' }}#{CRLF}"

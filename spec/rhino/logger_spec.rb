@@ -1,8 +1,8 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Rhino::Logger do
 
-  let (:stream) { double(:stream) }
+  let(:stream) { double(:stream) }
 
   describe "#log" do
     it "proxies to stream" do

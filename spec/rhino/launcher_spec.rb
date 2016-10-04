@@ -1,13 +1,13 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Rhino::Launcher do
-  let (:port) { 80 }
-  let (:bind) { "0.0.0.0" }
-  let (:backlog) { 64 }
-  let (:reuseaddr) { true }
-  let (:config) { "./spec/support/config.ru" }
-  let (:socket) { double(:socket) }
-  let (:server) { double(:server) }
+  let(:port) { 80 }
+  let(:bind) { "0.0.0.0" }
+  let(:backlog) { 64 }
+  let(:reuseaddr) { true }
+  let(:config) { "./spec/support/config.ru" }
+  let(:socket) { double(:socket) }
+  let(:server) { double(:server) }
 
   describe "#run" do
     it "configures a socket and proxies to server" do

@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    rhino (0.0.2)
+    rhino (0.0.3)
       rack
       slop
 

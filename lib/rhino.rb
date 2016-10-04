@@ -10,10 +10,10 @@ require "rhino/version"
 
 module Rhino
   def self.config
-    @@config ||= Rhino::Config.new
+    @config ||= Rhino::Config.new
   end
 
   def self.logger
-    @@logger ||= Rhino::Logger.new
+    @logger ||= Rhino::Logger.new
   end
 end

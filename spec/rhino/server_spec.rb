@@ -1,11 +1,11 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Rhino::Server do
-  let (:server) { Rhino::Server.new(application, sockets) }
+  let(:server) { Rhino::Server.new(application, sockets) }
 
-  let (:application) { double(:application) }
-  let (:socket) { double(:socket) }
-  let (:sockets) { [socket] }
+  let(:application) { double(:application) }
+  let(:socket) { double(:socket) }
+  let(:sockets) { [socket] }
 
   describe "#run" do
     it "handles interrupt" do
@@ -21,8 +21,8 @@ describe Rhino::Server do
       socket = double(:socket)
       http = double(:http)
 
-      expect(Rhino::HTTP).to receive(:new).with(socket) { http }
-      expect(http).to receive(:handle).with(application)
+      expect(Rhino::HTTP).to receive(:new).with(socket, application) { http }
+      expect(http).to receive(:handle)
 
       expect(IO).to receive(:select).with(sockets) { io }
       expect(io).to receive(:accept) { socket }
@@ -36,8 +36,8 @@ describe Rhino::Server do
       socket = double(:socket)
       http = double(:http)
 
-      expect(Rhino::HTTP).to receive(:new).with(socket) { http }
-      expect(http).to receive(:handle).with(application) { raise Rhino::HTTP::Exception.new("invalid request line") }
+      expect(Rhino::HTTP).to receive(:new).with(socket, application) { http }
+      expect(http).to receive(:handle) { raise Rhino::HTTP::Exception.new("invalid request line") }
 
       expect(IO).to receive(:select).with(sockets) { io }
       expect(io).to receive(:accept) { socket }

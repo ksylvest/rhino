@@ -1,28 +1,28 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Rhino::HTTP do
 
-  let (:content) { SecureRandom.hex }
-  let (:socket) { double(:socket) }
-  let (:application) { double(:application) }
+  let(:content) { SecureRandom.hex }
+  let(:socket) { double(:socket) }
+  let(:application) { double(:application) }
+  let (:http) { Rhino::HTTP.new(socket, application) }
 
   describe "#parse" do
     it "matches a valid request line and headers" do
-      expect(socket).to receive(:gets) { "POST /search?query=sample HTTP/1.1#{Rhino::HTTP::CRLF}"  }
+      expect(socket).to receive(:gets) { "POST /search?query=sample HTTP/1.1#{Rhino::HTTP::CRLF}" }
       expect(socket).to receive(:gets) { "Accept-Encoding: gzip#{Rhino::HTTP::CRLF}" }
       expect(socket).to receive(:gets) { "Accept-Language: en#{Rhino::HTTP::CRLF}" }
       expect(socket).to receive(:gets) { "Content-Type: text/html#{Rhino::HTTP::CRLF}" }
       expect(socket).to receive(:gets) { "Content-Length: #{content.length}#{Rhino::HTTP::CRLF}" }
-      expect(socket).to receive(:gets) { "X-ABC-DEF-GHI:ABC #{Rhino::HTTP::CRLF}"}
-      expect(socket).to receive(:gets) { "  \tDEF#{Rhino::HTTP::CRLF}"}
-      expect(socket).to receive(:gets) { "  \tGHI#{Rhino::HTTP::CRLF}"}
-      expect(socket).to receive(:gets) { "X-JKL-MNO-PQR:JKL #{Rhino::HTTP::CRLF}"}
-      expect(socket).to receive(:gets) { "  \tMNO#{Rhino::HTTP::CRLF}"}
-      expect(socket).to receive(:gets) { "  \tPQR#{Rhino::HTTP::CRLF}"}
+      expect(socket).to receive(:gets) { "X-ABC-DEF-GHI:ABC #{Rhino::HTTP::CRLF}" }
+      expect(socket).to receive(:gets) { "  \tDEF#{Rhino::HTTP::CRLF}" }
+      expect(socket).to receive(:gets) { "  \tGHI#{Rhino::HTTP::CRLF}" }
+      expect(socket).to receive(:gets) { "X-JKL-MNO-PQR:JKL #{Rhino::HTTP::CRLF}" }
+      expect(socket).to receive(:gets) { "  \tMNO#{Rhino::HTTP::CRLF}" }
+      expect(socket).to receive(:gets) { "  \tPQR#{Rhino::HTTP::CRLF}" }
       expect(socket).to receive(:gets) { Rhino::HTTP::CRLF }
       expect(socket).to receive(:read) { content }
 
-      http = Rhino::HTTP.new(socket)
       env = http.parse
       expect(env["HTTP_VERSION"]).to eql("HTTP/1.1")
       expect(env["REQUEST_URI"]).to eql("/search?query=sample")
@@ -43,20 +43,14 @@ describe Rhino::HTTP do
       rl = Rhino::HTTP::CRLF
       expect(socket).to receive(:gets) { rl }
 
-      expect {
-        http = Rhino::HTTP.new(socket)
-        env = http.parse
-      }.to raise_error(Rhino::HTTP::Exception, "invalid request line: #{rl.inspect}")
+      expect { http.parse }.to raise_error(Rhino::HTTP::Exception, "invalid request line: #{rl.inspect}")
     end
 
     it "raises an exception ('invalid URI') if the URI in the request line is invalid" do
       rl = "GET <> HTTP/1.1#{Rhino::HTTP::CRLF}"
       expect(socket).to receive(:gets) { rl }
 
-      expect {
-        http = Rhino::HTTP.new(socket)
-        env = http.parse
-      }.to raise_error(Rhino::HTTP::Exception, "invalid URI in request line: #{rl.inspect}")
+      expect { http.parse }.to raise_error(Rhino::HTTP::Exception, "invalid URI in request line: #{rl.inspect}")
     end
 
     it "raises an exception ('invalid header line') if any header line is invalid" do
@@ -66,24 +60,21 @@ describe Rhino::HTTP do
       expect(socket).to receive(:gets) { "Accept-Language: en#{Rhino::HTTP::CRLF}" }
       expect(socket).to receive(:gets) { hl }
 
-      expect {
-        http = Rhino::HTTP.new(socket)
-        env = http.parse
-      }.to raise_error(Rhino::HTTP::Exception, "invalid header line: #{hl.inspect}")
+      expect { http.parse }.to raise_error(Rhino::HTTP::Exception, "invalid header line: #{hl.inspect}")
     end
   end
 
   describe "#handle" do
     it "handles the request with the application" do
       expect(Time).to receive(:now) { double(:time, httpdate: "Thu, 01 Jan 1970 00:00:00 GMT") }
-      expect(application).to receive(:call) { [200, { 'Content-Type' => 'text/html' }, ['<html></html>']] }
+      expect(application).to receive(:call) { [200, { "Content-Type" => "text/html" }, ["<html></html>"]] }
 
-      expect(socket).to receive(:gets) { "GET / HTTP/1.1#{Rhino::HTTP::CRLF}"  }
+      expect(socket).to receive(:gets) { "GET / HTTP/1.1#{Rhino::HTTP::CRLF}" }
       expect(socket).to receive(:gets) { "Accept-Encoding: gzip#{Rhino::HTTP::CRLF}" }
       expect(socket).to receive(:gets) { "Accept-Language: en#{Rhino::HTTP::CRLF}" }
       expect(socket).to receive(:gets) { "Content-Type: text/html#{Rhino::HTTP::CRLF}" }
       expect(socket).to receive(:gets) { "Content-Length: #{content.length}#{Rhino::HTTP::CRLF}" }
-      expect(socket).to receive(:gets) { "#{Rhino::HTTP::CRLF}" }
+      expect(socket).to receive(:gets) { Rhino::HTTP::CRLF }
       expect(socket).to receive(:read) { content }
 
       expect(socket).to receive(:write).with("HTTP/1.1 200 OK#{Rhino::HTTP::CRLF}")
@@ -95,8 +86,7 @@ describe Rhino::HTTP do
 
       expect(Rhino.logger).to receive(:log).with("[Thu, 01 Jan 1970 00:00:00 GMT] 'GET / HTTP/1.1' 200")
 
-      http = Rhino::HTTP.new(socket)
-      http.handle(application)
+      http.handle
     end
 
     it "handles an exception with the application" do
@@ -104,12 +94,12 @@ describe Rhino::HTTP do
 
       expect(application).to receive(:call) { raise ::Exception.new("an unknown error occurred") }
 
-      expect(socket).to receive(:gets) { "GET / HTTP/1.1#{Rhino::HTTP::CRLF}"  }
+      expect(socket).to receive(:gets) { "GET / HTTP/1.1#{Rhino::HTTP::CRLF}" }
       expect(socket).to receive(:gets) { "Accept-Encoding: gzip#{Rhino::HTTP::CRLF}" }
       expect(socket).to receive(:gets) { "Accept-Language: en#{Rhino::HTTP::CRLF}" }
       expect(socket).to receive(:gets) { "Content-Type: text/html#{Rhino::HTTP::CRLF}" }
       expect(socket).to receive(:gets) { "Content-Length: #{content.length}#{Rhino::HTTP::CRLF}" }
-      expect(socket).to receive(:gets) { "#{Rhino::HTTP::CRLF}" }
+      expect(socket).to receive(:gets) { Rhino::HTTP::CRLF }
       expect(socket).to receive(:read) { content }
 
       expect(socket).to receive(:write).with("HTTP/1.1 500 Internal Server Error#{Rhino::HTTP::CRLF}")
@@ -120,8 +110,7 @@ describe Rhino::HTTP do
       expect(Rhino.logger).to receive(:log).with("#<Exception: an unknown error occurred>")
       expect(Rhino.logger).to receive(:log).with("[Thu, 01 Jan 1970 00:00:00 GMT] 'GET / HTTP/1.1' 500")
 
-      http = Rhino::HTTP.new(socket)
-      http.handle(application)
+      http.handle
     end
   end
 
