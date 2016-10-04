@@ -9,7 +9,7 @@ describe Rhino do
   end
 
   describe ".logger" do
-    it "is an instance of 'Rhino::Loger'" do
+    it "is an instance of 'Rhino::Logger'" do
       expect(Rhino.logger).to be_kind_of(Rhino::Logger)
     end
   end
