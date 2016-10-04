@@ -63,7 +63,12 @@ module Rhino
 
     def handle(application)
       env = parse
-      status, headers, body = application.call(env)
+      begin
+        status, headers, body = application.call(env)
+      rescue => exception
+        Rhino.logger.log(exception.inspect)
+        status, headers, body = 500, {}, []
+      end
       time = Time.now.httpdate
 
       socket.write "#{VERSION} #{status} #{Rack::Utils::HTTP_STATUS_CODES.fetch(status) { 'UNKNOWN' }}#{CRLF}"
