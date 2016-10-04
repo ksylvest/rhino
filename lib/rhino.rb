@@ -1,4 +1,8 @@
 require "rack"
+require "slop"
+require "socket"
+require "time"
+require "uri"
 
 require "rhino/cli"
 require "rhino/config"

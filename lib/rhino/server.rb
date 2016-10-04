@@ -1,5 +1,3 @@
-require 'socket'
-
 module Rhino
   class Server
     attr_accessor :application

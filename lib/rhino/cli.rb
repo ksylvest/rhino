@@ -1,5 +1,3 @@
-require "slop"
-
 module Rhino
 
   # A wrapper for command line interaction that encompasses option parsing, version, help, and execution.

@@ -1,7 +1,3 @@
-require "uri"
-require "rack"
-require "time"
-
 module Rhino
 
   # An interface for HTTP. Responsible for reading and writting to the socket via the HTTP protocol.
