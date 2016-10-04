@@ -29,9 +29,9 @@ module Rhino
         socket, _ = io.accept
         http = Rhino::HTTP::new(socket)
         http.handle(application)
-      rescue ::Errno::ECONNRESET , ::Errno::ENOTCONN
-      rescue::Exception => exception
+      rescue Rhino::HTTP::Exception => exception
         Rhino.logger.log("EXCEPTION: #{exception.message}")
+      rescue ::Errno::ECONNRESET , ::Errno::ENOTCONN , ::Errno::EPIPE , ::Errno::EPROTOTYPE
       ensure
         socket.close
       end
