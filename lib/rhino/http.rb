@@ -45,13 +45,31 @@ module Rhino
         "SCRIPT_NAME" => "",
       }
 
-      while matches = /\A(?<key>[^:]+):\s+(?<value>.*)#{CRLF}\Z/.match(line = socket.gets) do
+      key = nil
+      value = nil
+      loop do
+        hl = socket.gets
 
-        case matches[:key]
-        when Rack::CONTENT_TYPE then env["CONTENT_TYPE"] = matches[:value]
-        when Rack::CONTENT_LENGTH then env["CONTENT_LENGTH"] = Integer(matches[:value])
-        else env["HTTP_" + matches[:key].tr("-", "_").upcase] ||= matches[:value]
+        if key && value
+          matches = /\A\s+(?<fold>.+)#{CRLF}\Z/.match(hl)
+          if matches
+            value = "#{value} #{matches[:fold].strip}"
+            next
+          end
+
+          case key
+          when Rack::CONTENT_TYPE then env["CONTENT_TYPE"] = value
+          when Rack::CONTENT_LENGTH then env["CONTENT_LENGTH"] = Integer(value)
+          else env["HTTP_" + key.tr("-", "_").upcase] ||= value
+          end
         end
+
+        break if hl.eql?(CRLF)
+
+        matches = /\A(?<key>[^:]+):\s*(?<value>.+)#{CRLF}\Z/.match(hl)
+        raise Exception.new("invalid header line: #{hl.inspect}") if !matches
+        key = matches[:key].strip
+        value = matches[:value].strip
       end
 
       input = socket.read(env["CONTENT_LENGTH"] || 0)
@@ -65,7 +83,7 @@ module Rhino
       env = parse
       begin
         status, headers, body = application.call(env)
-      rescue => exception
+      rescue ::Exception => exception
         Rhino.logger.log(exception.inspect)
         status, headers, body = 500, {}, []
       end
