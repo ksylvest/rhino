@@ -1,9 +1,7 @@
 require "spec_helper"
 
 describe Rhino::CLI do
-  let(:banner) { Rhino::CLI::BANNER }
-
-  let(:cli) { Rhino::CLI.new() }
+  let(:cli) { Rhino::CLI.new }
 
   describe "#parse" do
     %w(-v --version).each do |option|
@@ -28,11 +26,11 @@ describe Rhino::CLI do
       end
     end
 
-    it "delegates to a launcher" do
+    it "builds a launcher and executes run" do
       launcher = double(:launcher)
-      expect(Rhino::Launcher).to receive(:new) { launcher }
+      expect(Rhino::Launcher).to receive(:new).with(4000, "localhost", true, 16, "./config.ru") { launcher }
       expect(launcher).to receive(:run)
-      cli.parse([])
+      cli.parse(["--port", "4000", "--bind", "localhost", "--backlog", "16"])
     end
   end
 
