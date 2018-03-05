@@ -30,8 +30,8 @@ rhino [options] [./config.ru]
 
 [![CircleCI](https://circleci.com/gh/ksylvest/rhino.svg?style=svg)](https://circleci.com/gh/ksylvest/rhino)
 
-[![CodeClimate (Maintainability)](https://api.codeclimate.com/v1/badges/391d09bf5fb4a6be19e2/maintainability)](https://codeclimate.com/github/ksylvest/rhino/maintainability)
-[![CodeClimate (Test Coverage)](https://api.codeclimate.com/v1/badges/391d09bf5fb4a6be19e2/test_coverage)](https://codeclimate.com/github/ksylvest/rhino/test_coverage)
+[![CodeClimate (Maintainability)](https://api.codeclimate.com/v1/badges/954685d3791ec3d34b63/maintainability)](https://codeclimate.com/github/ksylvest/rhino/maintainability)
+[![CodeClimate (Test Coverage)](https://api.codeclimate.com/v1/badges/954685d3791ec3d34b63/test_coverage)](https://codeclimate.com/github/ksylvest/rhino/test_coverage)
 
 [![Gemnasium](https://gemnasium.com/badges/github.com/ksylvest/rhino.svg)](https://gemnasium.com/github.com/ksylvest/rhino)
 
