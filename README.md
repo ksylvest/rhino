@@ -37,4 +37,4 @@ rhino [options] [./config.ru]
 
 ## Copyright
 
-Copyright (c) 2015 - 2018 Kevin Sylvestre. See LICENSE for details.
+Copyright (c) 2015 - 2018 [Kevin Sylvestre](https://ksylvest.com). See LICENSE for details.
