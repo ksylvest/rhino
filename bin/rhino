@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require "rhino"
+require 'rhino'
 
 cli = Rhino::CLI.new
 cli.parse

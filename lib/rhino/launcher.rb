@@ -8,47 +8,40 @@ module Rhino
   #   launcher.run
   #
   class Launcher
-    attr_accessor :port
-    attr_accessor :bind
-    attr_accessor :backlog
-    attr_accessor :config
-    attr_accessor :reuseaddr
-
     def initialize(port, bind, reuseaddr, backlog, config)
-      self.port = port
-      self.bind = bind
-      self.reuseaddr = reuseaddr
-      self.backlog = backlog
-      self.config = config
+      @port = port
+      @bind = bind
+      @reuseaddr = reuseaddr
+      @backlog = backlog
+      @config = config
     end
 
     def run
-      Rhino.logger.log("Rhino")
-      Rhino.logger.log("#{bind}:#{port}")
+      Rhino.logger.log('Rhino')
+      Rhino.logger.log("#{@bind}:#{@port}")
 
-      begin
-        socket = Socket.new(:INET, :STREAM)
-        socket.setsockopt(:SOL_SOCKET, :SO_REUSEADDR, reuseaddr)
-        socket.bind(Addrinfo.tcp(self.bind, self.port))
-        socket.listen(self.backlog)
+      @socket = Socket.new(:INET, :STREAM)
+      @socket.setsockopt(:SOL_SOCKET, :SO_REUSEADDR, @reuseaddr)
+      @socket.bind(Addrinfo.tcp(@bind, @port))
+      @socket.listen(@backlog)
 
-        server = Rhino::Server.new(application, [socket])
-        server.run
-      ensure
-        socket.close
-      end
+      Rhino::Server.new(application, [@socket]).run
+    ensure
+      @socket.close
+    end
+
+    def application
+      @application ||= eval(builder, nil, @config) # rubocop:disable Security/Eval
     end
 
   private
 
-    def application
-      raw = File.read(self.config)
-      builder = <<~BUILDER
-      Rack::Builder.new do
-        #{raw}
-      end
+    def builder
+      <<~BUILDER
+        Rack::Builder.new do
+          #{File.read(@config)}
+        end
       BUILDER
-      @application ||= eval(builder, nil, self.config)
     end
 
   end

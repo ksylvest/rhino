@@ -1,7 +1,7 @@
-require "coveralls"
-Coveralls.wear!
+require 'simplecov'
+SimpleCov.start
 
-require "bundler/setup"
+require 'bundler/setup'
 Bundler.setup
 
-require "rhino"
+require 'rhino'

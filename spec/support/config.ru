@@ -1,3 +1,3 @@
-require "rack"
+require 'rack'
 
-run proc { [200, { "Content-Type" => "text/html" }, ["<html><body>Hello!</body></html>"]] }
+run proc { [200, { 'Content-Type' => 'text/html' }, ['<html><body>Hello!</body></html>']] }
