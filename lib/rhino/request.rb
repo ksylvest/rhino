@@ -53,7 +53,7 @@ module Rhino
       end
     end
 
-    def env
+    def env # rubocop:disable Metrics/MethodLength
       @custom.merge(
         RACK_VERSION => Rack::VERSION,
         RACK_INPUT => rack_input,

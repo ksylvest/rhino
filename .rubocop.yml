@@ -3,16 +3,10 @@ AllCops:
   Exclude:
     - Gemfile
     - Gemfile.lock
-    - db/schema.rb
-    - bin/yarn
-    - bin/setup
-    - config/environments/*
+    - vendor/**/*
 
 Layout/AccessModifierIndentation:
   EnforcedStyle: outdent
-
-Layout/AlignParameters:
-  EnforcedStyle: with_fixed_indentation
 
 Layout/EmptyLinesAroundBlockBody:
   Enabled: false
@@ -35,32 +29,11 @@ Style/FrozenStringLiteralComment:
 Style/Documentation:
   Enabled: false
 
-Style/Lambda:
-  Enabled: false
-
 Style/BlockDelimiters:
   Enabled: false
-
-Style/RegexpLiteral:
-  Enabled: false
-
-Style/ClassAndModuleChildren:
-  Enabled: false
-
-Style/EmptyCaseCondition:
-  Enabled: false
-
-Style/TrailingCommaInLiteral:
-  EnforcedStyleForMultiline: consistent_comma
 
 Metrics/BlockLength:
   Enabled: false
 
 Metrics/LineLength:
   Max: 120
-
-Metrics/MethodLength:
-  Enabled: false
-
-Security/YAMLLoad:
-  Enabled: false

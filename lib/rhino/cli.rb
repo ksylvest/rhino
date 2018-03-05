@@ -19,13 +19,8 @@ module Rhino
       config = Slop.parse(items) do |options|
         options.banner = BANNER
 
-        options.on '-h', '--help', 'help' do
-          return help(options)
-        end
-
-        options.on '-v', '--version', 'version' do
-          return version
-        end
+        options.on('-h', '--help', 'help') { return help(options) }
+        options.on('-v', '--version', 'version') { return version }
 
         options.string '-b', '--bind', 'bind (default: 0.0.0.0)', default: DEFAULT_BIND
         options.integer '-p', '--port', 'port (default: 5000)', default: DEFAULT_PORT
@@ -39,11 +34,11 @@ module Rhino
   private
 
     def help(options)
-      Rhino.logger.log(options.to_s)
+      Rhino.logger.log(String(options))
     end
 
     def version
-      Rhino.logger.log(VERSION.to_s)
+      Rhino.logger.log(String(VERSION))
     end
 
     def run(options)
