@@ -1,6 +1,6 @@
 module Rhino
   class Response
-    RESERVED = /\A(Date|Connection)\Z/i
+    RESERVED = /\A(Date|Connection)\Z/i.freeze
     VERSION = 'HTTP/1.1'.freeze
 
     def self.flush(socket, status, headers, body, time)

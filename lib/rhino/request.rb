@@ -29,9 +29,9 @@ module Rhino
     CONTENT_LENGTH = 'CONTENT_LENGTH'.freeze
     DEFAULT_CONTENT_LENGTH = 0
 
-    REQUEST_LINE_FORMAT = /\A(?<method>\S+)\s+(?<uri>\S+)\s+(?<version>\S+)#{CRLF}\Z/
-    HEADER_LINE_FORMAT = /\A(?<key>[^:]+):\s*(?<value>.+)#{CRLF}\Z/
-    HEADER_LINE_FOLD_FORMAT = /\A\s+(?<fold>.+)#{CRLF}\Z/
+    REQUEST_LINE_FORMAT = /\A(?<method>\S+)\s+(?<uri>\S+)\s+(?<version>\S+)#{CRLF}\Z/.freeze
+    HEADER_LINE_FORMAT = /\A(?<key>[^:]+):\s*(?<value>.+)#{CRLF}\Z/.freeze
+    HEADER_LINE_FOLD_FORMAT = /\A\s+(?<fold>.+)#{CRLF}\Z/.freeze
 
     HEADER_LINE_FOLD_SEPARATOR = ' '.freeze
 
