@@ -26,8 +26,8 @@ module Rhino
     def handle(connection)
       socket, = connection.accept
       Rhino::HTTP.handle(socket, @application)
-    rescue Rhino::ParseError, Errno::ECONNRESET, Errno::ENOTCONN, Errno::EPIPE, Errno::EPROTOTYPE => exception
-      Rhino.logger.log("EXCEPTION: #{exception.message}")
+    rescue Rhino::ParseError, Errno::ECONNRESET, Errno::ENOTCONN, Errno::EPIPE, Errno::EPROTOTYPE => e
+      Rhino.logger.log("EXCEPTION: #{e.message}")
     ensure
       socket.close
     end
