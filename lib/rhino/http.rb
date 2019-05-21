@@ -40,8 +40,8 @@ module Rhino
 
     def process(env)
       @application.call(env)
-    rescue ::Exception => exception # rubocop:disable Lint/RescueException
-      Rhino.logger.log(exception.inspect)
+    rescue ::Exception => e # rubocop:disable Lint/RescueException
+      Rhino.logger.log(e.inspect)
       EXCEPTION_TUPLE
     end
   end
