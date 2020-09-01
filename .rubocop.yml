@@ -34,6 +34,3 @@ Style/BlockDelimiters:
 
 Metrics/BlockLength:
   Enabled: false
-
-Metrics/LineLength:
-  Max: 120

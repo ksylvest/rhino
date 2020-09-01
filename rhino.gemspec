@@ -13,6 +13,8 @@ Gem::Specification.new do |spec|
   spec.description = 'This should probably never be used.'
   spec.files       = Dir.glob('{bin,lib}/**/*') + %w[README.md LICENSE Gemfile]
 
+  spec.required_ruby_version = '> 2.5.0'
+
   spec.add_dependency 'rack'
   spec.add_dependency 'slop'
   spec.add_development_dependency 'bundler'
@@ -20,5 +22,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec'
   spec.add_development_dependency 'rspec_junit_formatter'
   spec.add_development_dependency 'rubocop'
-  spec.add_development_dependency 'simplecov'
+  spec.add_development_dependency 'simplecov', '< 0.18'
 end
