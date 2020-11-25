@@ -9,9 +9,6 @@ module Rhino
   #
   class HTTP
 
-    RequestLine = Struct.new(:method, :url, :version)
-    HeaderLine = Struct.new(:key, :value)
-
     EXCEPTION_STATUS = 500
     EXCEPTION_HEADERS = {}.freeze
     EXCEPTION_BODY = [].freeze

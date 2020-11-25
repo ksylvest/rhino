@@ -98,7 +98,7 @@ module Rhino
       case key
       when Rack::CONTENT_TYPE then @custom[CONTENT_TYPE] = String(value)
       when Rack::CONTENT_LENGTH then @custom[CONTENT_LENGTH] = Integer(value)
-      else @custom[('HTTP_' + key.tr('-', '_')).upcase] = value
+      else @custom["HTTP_#{key.tr('-', '_').upcase}"] = value
       end
     end
 

@@ -33,7 +33,7 @@ describe Rhino::HTTP do
     it 'handles an exception with the application' do
       expect(Time).to receive(:now) { double(:time, httpdate: 'Thu, 01 Jan 1970 00:00:00 GMT') }
 
-      expect(application).to receive(:call) { raise Exception, 'an unknown error occurred' }
+      expect(application).to receive(:call) { raise StandardError, 'an unknown error occurred' }
 
       expect(socket).to receive(:gets) { "GET / HTTP/1.1#{Rhino::CRLF}" }
       expect(socket).to receive(:gets) { "Accept-Encoding: gzip#{Rhino::CRLF}" }
@@ -48,7 +48,7 @@ describe Rhino::HTTP do
       expect(socket).to receive(:write).with("Connection: close#{Rhino::CRLF}")
       expect(socket).to receive(:write).with(Rhino::CRLF)
 
-      expect(Rhino.logger).to receive(:log).with('#<Exception: an unknown error occurred>')
+      expect(Rhino.logger).to receive(:log).with('#<StandardError: an unknown error occurred>')
       expect(Rhino.logger).to receive(:log).with("[Thu, 01 Jan 1970 00:00:00 GMT] 'GET / HTTP/1.1' 500")
 
       Rhino::HTTP.handle(socket, application)

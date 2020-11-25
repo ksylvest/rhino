@@ -20,6 +20,9 @@ Layout/EmptyLinesAroundModuleBody:
 Lint/AmbiguousBlockAssociation:
   Enabled: false
 
+Style/AccessorGrouping:
+  EnforcedStyle: separated
+
 Style/SpecialGlobalVars:
   Enabled: false
 
