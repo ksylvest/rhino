@@ -1,9 +1,13 @@
 AllCops:
+  NewCops: enable
   TargetRubyVersion: 2.5
   Exclude:
     - Gemfile
     - Gemfile.lock
     - vendor/**/*
+
+Gemspec/RequireMFA:
+  Enabled: false
 
 Layout/AccessModifierIndentation:
   EnforcedStyle: outdent
