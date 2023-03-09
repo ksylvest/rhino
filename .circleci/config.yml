@@ -6,7 +6,7 @@ orbs:
 executors:
   default:
     docker:
-      - image: cimg/ruby:3.1.2
+      - image: cimg/ruby:3.2.1
 
 jobs:
   rubocop:
