@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  ruby: circleci/ruby@4.0.1
+  ruby: circleci/ruby@3.0.0
 
 executors:
   default:
