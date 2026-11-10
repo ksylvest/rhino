@@ -1,51 +1,65 @@
+# frozen_string_literal: true
+
 module Rhino
+  # Parses an HTTP request (request line and headers) from a socket into a Rack env.
+  #
+  # Usage:
+  #
+  #   env = Rhino::Request.env(socket)
+  #
   class Request
-    RACK_VERSION = 'rack.version'.freeze
-    RACK_ERRORS = 'rack.errors'.freeze
-    RACK_INPUT = 'rack.input'.freeze
-    RACK_MULTIPROCESS = 'rack.multiprocess'.freeze
-    RACK_MULTITHREAD = 'rack.multithread'.freeze
-    RACK_RUN_ONCE = 'rack.run_once'.freeze
-    RACK_URL_SCHEME = 'rack.url_scheme'.freeze
-    REQUEST_METHOD = 'REQUEST_METHOD'.freeze
-    REQUEST_URI = 'REQUEST_URI'.freeze
-    HTTP_VERSION = 'HTTP_VERSION'.freeze
-    QUERY_STRING = 'QUERY_STRING'.freeze
-    SERVER_PORT = 'SERVER_PORT'.freeze
-    SERVER_NAME = 'SERVER_NAME'.freeze
-    SCRIPT_NAME = 'SCRIPT_NAME'.freeze
-    PATH_INFO = 'PATH_INFO'.freeze
+    RACK_VERSION = "rack.version"
+    RACK_ERRORS = "rack.errors"
+    RACK_INPUT = "rack.input"
+    RACK_MULTIPROCESS = "rack.multiprocess"
+    RACK_MULTITHREAD = "rack.multithread"
+    RACK_RUN_ONCE = "rack.run_once"
+    RACK_URL_SCHEME = "rack.url_scheme"
+    REQUEST_METHOD = "REQUEST_METHOD"
+    REQUEST_URI = "REQUEST_URI"
+    HTTP_VERSION = "HTTP_VERSION"
+    QUERY_STRING = "QUERY_STRING"
+    SERVER_PORT = "SERVER_PORT"
+    SERVER_NAME = "SERVER_NAME"
+    SCRIPT_NAME = "SCRIPT_NAME"
+    PATH_INFO = "PATH_INFO"
 
-    DEFAULT_RACK_URL_SCHEME = 'http'.freeze
+    DEFAULT_RACK_URL_SCHEME = "http"
 
-    DEFAULT_SERVER_NAME = 'localhost'.freeze
+    DEFAULT_SERVER_NAME = "localhost"
     DEFAULT_SERVER_PORT = 80
 
-    DEFAULT_PATH_INFO = ''.freeze
-    DEFAULT_QUERY_STRING = ''.freeze
-    DEFAULT_SCRIPT_NAME = ''.freeze
+    DEFAULT_PATH_INFO = ""
+    DEFAULT_QUERY_STRING = ""
+    DEFAULT_SCRIPT_NAME = ""
 
-    CONTENT_TYPE = 'CONTENT_TYPE'.freeze
-    CONTENT_LENGTH = 'CONTENT_LENGTH'.freeze
+    CONTENT_TYPE = "CONTENT_TYPE"
+    CONTENT_LENGTH = "CONTENT_LENGTH"
     DEFAULT_CONTENT_LENGTH = 0
 
-    REQUEST_LINE_FORMAT = /\A(?<method>\S+)\s+(?<uri>\S+)\s+(?<version>\S+)#{CRLF}\Z/.freeze
-    HEADER_LINE_FORMAT = /\A(?<key>[^:]+):\s*(?<value>.+)#{CRLF}\Z/.freeze
-    HEADER_LINE_FOLD_FORMAT = /\A\s+(?<fold>.+)#{CRLF}\Z/.freeze
+    REQUEST_LINE_FORMAT = /\A(?<method>\S+)\s+(?<uri>\S+)\s+(?<version>\S+)#{CRLF}\Z/
+    HEADER_LINE_FORMAT = /\A(?<key>[^:]+):\s*(?<value>.+)#{CRLF}\Z/
+    HEADER_LINE_FOLD_FORMAT = /\A\s+(?<fold>.+)#{CRLF}\Z/
 
-    HEADER_LINE_FOLD_SEPARATOR = ' '.freeze
+    HEADER_LINE_FOLD_SEPARATOR = " "
 
+    # @param socket [Socket]
+    # @raise [Rhino::ParseError]
+    # @return [Hash{String => Object}] the Rack env
     def self.env(socket)
       request = Request.new(socket)
       request.parse
       request.env
     end
 
+    # @param socket [Socket]
     def initialize(socket)
       @socket = socket
       @custom = {}
     end
 
+    # @raise [Rhino::ParseError]
+    # @return [void]
     def parse
       parse_request_line
       loop do
@@ -53,6 +67,7 @@ module Rhino
       end
     end
 
+    # @return [Hash{String => Object}] the Rack env
     def env # rubocop:disable Metrics/MethodLength
       @custom.merge(
         RACK_VERSION => Rack::VERSION,
@@ -75,10 +90,13 @@ module Rhino
 
   private
 
+    # @return [StringIO]
     def rack_input
       StringIO.new(@socket.read(@custom[CONTENT_LENGTH] || DEFAULT_CONTENT_LENGTH))
     end
 
+    # @raise [Rhino::ParseError]
+    # @return [String, Integer, nil] nil once the blank line terminating the headers is read
     def parse_header_line
       raw_header_line = @socket.gets
       return if raw_header_line.eql?(CRLF)
@@ -92,6 +110,9 @@ module Rhino
       end
     end
 
+    # @param key [String]
+    # @param value [String]
+    # @return [String, Integer]
     def parse_header_line_key_value(key, value)
       @current_header_line_value = value
 
@@ -102,12 +123,16 @@ module Rhino
       end
     end
 
+    # @param fold [String]
+    # @return [String, nil]
     def parse_header_line_fold(fold)
       @current_header_line_value
         &.concat(HEADER_LINE_FOLD_SEPARATOR)
         &.concat(fold)
     end
 
+    # @raise [Rhino::ParseError]
+    # @return [void]
     def parse_request_line
       raw_request_line = @socket.gets
       matches = REQUEST_LINE_FORMAT.match(raw_request_line)

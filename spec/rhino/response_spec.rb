@@ -1,24 +1,32 @@
-require 'spec_helper'
+# frozen_string_literal: true
+
+require "spec_helper"
 
 describe Rhino::Response do
-  let(:socket) { double(:socket) }
-  let(:status) { 200 }
-  let(:headers) { { 'Content-Type' => 'text/html' } }
-  let(:body) { ['<html></html>'] }
-  let(:time) { 'Thu, 01 Jan 1970 00:00:00 GMT' }
+  let(:socket) { instance_double(Socket) }
+  let(:output) { [] }
 
-  describe '.flush' do
-    subject(:flush) { Rhino::Response.flush(socket, status, headers, body, time) }
+  let(:response) do
+    [
+      "HTTP/1.1 200 OK#{Rhino::CRLF}",
+      "Date: Thu, 01 Jan 1970 00:00:00 GMT#{Rhino::CRLF}",
+      "Connection: close#{Rhino::CRLF}",
+      "Content-Type: text/html#{Rhino::CRLF}",
+      Rhino::CRLF,
+      "<html></html>",
+    ]
+  end
 
-    it 'flushes a result' do
-      expect(socket).to receive(:write).with("HTTP/1.1 200 OK#{Rhino::CRLF}")
-      expect(socket).to receive(:write).with("Date: Thu, 01 Jan 1970 00:00:00 GMT#{Rhino::CRLF}")
-      expect(socket).to receive(:write).with("Connection: close#{Rhino::CRLF}")
-      expect(socket).to receive(:write).with("Content-Type: text/html#{Rhino::CRLF}")
-      expect(socket).to receive(:write).with(Rhino::CRLF)
-      expect(socket).to receive(:write).with('<html></html>')
+  before { allow(socket).to receive(:write) { |data| output << data } }
 
-      flush
+  describe ".flush" do
+    before do
+      described_class.flush(socket, 200, { "Content-Type" => "text/html" }, ["<html></html>"],
+        "Thu, 01 Jan 1970 00:00:00 GMT")
+    end
+
+    it "flushes a result" do
+      expect(output).to eql(response)
     end
   end
 end

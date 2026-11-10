@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Rhino
-  CRLF = "\r\n".freeze
+  CRLF = "\r\n"
 end
