@@ -1,12 +1,12 @@
 version: 2.1
 
 orbs:
-  ruby: circleci/ruby@2.0.0
+  ruby: circleci/ruby@4.0.1
 
 executors:
   default:
     docker:
-      - image: cimg/ruby:3.2.1
+      - image: cimg/ruby:4.0.9
 
 jobs:
   rubocop:
@@ -22,11 +22,6 @@ jobs:
       - checkout
       - ruby/install-deps
       - ruby/rspec-test
-      - run: |
-          curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-$CC_TEST_REPORTER_VERSION > ./cc-test-reporter
-          chmod +x ./cc-test-reporter
-          ./cc-test-reporter format-coverage -t simplecov coverage/coverage.json
-          ./cc-test-reporter upload-coverage
 
 workflows:
   version: 2.1

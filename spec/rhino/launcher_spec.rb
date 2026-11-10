@@ -1,38 +1,44 @@
-require 'spec_helper'
+# frozen_string_literal: true
+
+require "spec_helper"
 
 describe Rhino::Launcher do
-  let(:port) { 80 }
-  let(:bind) { '0.0.0.0' }
-  let(:backlog) { 64 }
-  let(:reuseaddr) { true }
-  let(:config) { './spec/support/config.ru' }
-  let(:socket) { double(:socket) }
-  let(:server) { double(:server) }
+  let(:launcher) { described_class.new(80, "0.0.0.0", true, 64, "./spec/support/config.ru") }
 
-  describe '#application' do
-    it 'parses config into rack builder' do
-      launcher = Rhino::Launcher.new(port, bind, reuseaddr, backlog, config)
-      expect(launcher.application).to be_kind_of(Rack::Builder)
+  describe "#application" do
+    it "parses config into rack builder" do
+      expect(launcher.application).to be_a(Rack::Builder)
     end
   end
 
-  describe '#run' do
-    it 'configures a socket and proxies to server' do
-      launcher = Rhino::Launcher.new(port, bind, reuseaddr, backlog, config)
+  describe "#run" do
+    let(:socket) { instance_double(Socket, setsockopt: nil, bind: nil, listen: nil, close: nil) }
+    let(:server) { instance_double(Rhino::Server, run: nil) }
 
-      expect(Rhino.logger).to receive(:log).with('Rhino')
-      expect(Rhino.logger).to receive(:log).with('0.0.0.0:80')
-      expect(Socket).to receive(:new).with(:INET, :STREAM) { socket }
-      expect(socket).to receive(:bind)
-      expect(socket).to receive(:setsockopt).with(:SOL_SOCKET, :SO_REUSEADDR, reuseaddr)
-      expect(socket).to receive(:listen).with(backlog)
-      expect(socket).to receive(:close)
-
-      expect(Rhino::Server).to receive(:new) { server }
-      expect(server).to receive(:run)
-
+    before do
+      allow(Rhino.logger).to receive(:log)
+      allow(Socket).to receive(:new).with(:INET, :STREAM).and_return(socket)
+      allow(Rhino::Server).to receive(:new).and_return(server)
       launcher.run
     end
-  end
 
+    it "logs the name and address", :aggregate_failures do
+      expect(Rhino.logger).to have_received(:log).with("Rhino")
+      expect(Rhino.logger).to have_received(:log).with("0.0.0.0:80")
+    end
+
+    it "configures the socket", :aggregate_failures do
+      expect(socket).to have_received(:setsockopt).with(:SOL_SOCKET, :SO_REUSEADDR, true)
+      expect(socket).to have_received(:bind)
+      expect(socket).to have_received(:listen).with(64)
+    end
+
+    it "proxies to server" do
+      expect(server).to have_received(:run)
+    end
+
+    it "closes the socket" do
+      expect(socket).to have_received(:close)
+    end
+  end
 end

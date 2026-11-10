@@ -1,17 +1,17 @@
-require 'spec_helper'
+# frozen_string_literal: true
+
+require "spec_helper"
 
 describe Rhino do
-
-  describe '.config' do
+  describe ".config" do
     it "is an instance of 'Rhino::Config'" do
-      expect(Rhino.config).to be_kind_of(Rhino::Config)
+      expect(described_class.config).to be_a(Rhino::Config)
     end
   end
 
-  describe '.logger' do
+  describe ".logger" do
     it "is an instance of 'Rhino::Logger'" do
-      expect(Rhino.logger).to be_kind_of(Rhino::Logger)
+      expect(described_class.logger).to be_a(Rhino::Logger)
     end
   end
-
 end

@@ -1,45 +1,58 @@
-require 'spec_helper'
+# frozen_string_literal: true
+
+require "spec_helper"
 
 describe Rhino::Server do
-  let(:server) { Rhino::Server.new(application, sockets) }
+  let(:server) { described_class.new(application, [io]) }
 
-  let(:application) { double(:application) }
-  let(:socket) { double(:socket) }
-  let(:sockets) { [socket] }
-  let(:io) { double(:io) }
+  let(:application) { instance_double(Rack::Builder) }
+  let(:socket) { instance_double(Socket, close: nil) }
+  let(:io) { instance_double(Socket, accept: [socket, nil]) }
 
-  describe '#run' do
-    it 'handles interrupt' do
-      expect(server).to receive(:monitor) { raise Interrupt }
-      expect(Rhino.logger).to receive(:log).with('INTERRUPTED')
+  before { allow(Rhino.logger).to receive(:log) }
+
+  describe "#run" do
+    before do
+      allow(server).to receive(:monitor).and_raise(Interrupt)
       server.run
     end
+
+    it "handles interrupt" do
+      expect(Rhino.logger).to have_received(:log).with("INTERRUPTED")
+    end
   end
 
-  describe '#monitor' do
-    it 'selects then accepts and handles a valid connection' do
-      expect(IO).to receive(:select).with(sockets) { io }
-      expect(io).to receive(:accept) { socket }
-      expect(socket).to receive(:close)
+  describe "#monitor" do
+    before { allow(IO).to receive(:select).with([io]).and_return([[io], [], []]) }
 
-      expect(Rhino::HTTP).to receive(:handle).with(socket, application)
-
-      server.monitor
-    end
-
-    it 'handles a "Rhino::ParseError"' do
-      expect(IO).to receive(:select).with(sockets) { io }
-      expect(io).to receive(:accept) { socket }
-      expect(socket).to receive(:close)
-
-      expect(Rhino::HTTP).to receive(:handle).with(socket, application) do
-        raise Rhino::ParseError, 'some parse error'
+    context "with a valid connection" do
+      before do
+        allow(Rhino::HTTP).to receive(:handle)
+        server.monitor
       end
 
-      expect(Rhino.logger).to receive(:log).with('EXCEPTION: some parse error')
+      it "handles the connection" do
+        expect(Rhino::HTTP).to have_received(:handle).with(socket, application)
+      end
 
-      server.monitor
+      it "closes the socket" do
+        expect(socket).to have_received(:close)
+      end
+    end
+
+    context 'with a "Rhino::ParseError"' do
+      before do
+        allow(Rhino::HTTP).to receive(:handle).and_raise(Rhino::ParseError, "some parse error")
+        server.monitor
+      end
+
+      it "logs the exception" do
+        expect(Rhino.logger).to have_received(:log).with("EXCEPTION: some parse error")
+      end
+
+      it "closes the socket" do
+        expect(socket).to have_received(:close)
+      end
     end
   end
-
 end

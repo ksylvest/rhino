@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
-require 'rhino'
+require "rhino"
 
 cli = Rhino::CLI.new
 cli.parse
